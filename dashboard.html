@@ -138,7 +138,8 @@
             display: block; width: 100%;
             padding: 0.75rem 1rem;
             cursor: pointer;
-            border: none; border-radius: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
             font-weight: 600;
             margin-top: 0.5rem;
             transition: all 0.2s ease;
@@ -488,7 +489,8 @@
             const bookId = document.getElementById('returnBookId').value;
             const memberName = document.getElementById('returnMember').value;
             
-            const res = await fetch('http://localhost:3000/return-book', {
+            // FIXED: Removed http://localhost:3000
+            const res = await fetch('/return-book', {
                 method: 'POST', headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({bookId, memberName})
             });
@@ -543,7 +545,8 @@
                 }
 
                 try {
-                    const res = await fetch('http://localhost:3000/users');
+                    // FIXED: Removed http://localhost:3000
+                    const res = await fetch('/users');
                     const users = await res.json();
                     
                     let html = `<h3 style="margin-bottom:15px; color:#1a365d;">System Users</h3><table><thead><tr>
@@ -577,7 +580,8 @@
                 if(!confirm("Are you sure you want to delete this user? They will lose access immediately.")) return;
 
                 try {
-                    const res = await fetch('http://localhost:3000/delete-user', {
+                    // FIXED: Removed http://localhost:3000
+                    const res = await fetch('/delete-user', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id })
@@ -599,7 +603,8 @@
                 return; 
             }
             try {
-                const res = await fetch('http://localhost:3000/books');
+                // FIXED: Removed http://localhost:3000
+                const res = await fetch('/books');
                 allBooks = await res.json();
                 renderTable('Book Catalog', ['ID', 'Title', 'Author', 'Category', 'Stock'], allBooks.map(b => [
                     `<strong>${b.id}</strong>`, b.title, b.author || '-', b.category, 
@@ -625,7 +630,8 @@
             let book = allBooks.find(b => b.id == id);
             if (!book) {
                 try {
-                    const res = await fetch('http://localhost:3000/books');
+                    // FIXED: Removed http://localhost:3000
+                    const res = await fetch('/books');
                     const data = await res.json();
                     book = data.find(b => b.id == id);
                 } catch(e) {}
@@ -646,7 +652,8 @@
             const category = document.getElementById('updateCategory').value;
             const stock = document.getElementById('updateStock').value;
             
-            await fetch('http://localhost:3000/update-book', {
+            // FIXED: Removed http://localhost:3000
+            await fetch('/update-book', {
                 method: 'PUT', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({id, title, author, category, stock})
             }).then(r => r.json()).then(d => {
@@ -676,7 +683,8 @@
                 return; 
             }
             try {
-                const res = await fetch('http://localhost:3000/members');
+                // FIXED: Removed http://localhost:3000
+                const res = await fetch('/members');
                 const members = await res.json();
                 renderTable('Membership List', ['ID', 'Name', 'Email', 'Phone', 'Join Date'], members.map(m => [
                     m.id, `<strong>${m.name}</strong>`, m.email, m.phone || '-', new Date(m.join_date).toLocaleDateString()
@@ -691,7 +699,8 @@
                 return; 
             }
             try {
-                const res = await fetch('http://localhost:3000/active-issues');
+                // FIXED: Removed http://localhost:3000
+                const res = await fetch('/active-issues');
                 const issues = await res.json();
                 renderTable('Active Issues List', ['Tx ID', 'User Name', 'Book ID','Book Title', 'Due Date'], issues.map(item => [
                     `#${item.id}`, `<strong>${item.user_name}</strong>`, item.book_id, item.title, new Date(item.due_date).toLocaleDateString()
@@ -706,7 +715,8 @@
                 return; 
             }
             try {
-                const res = await fetch('http://localhost:3000/overdue-returns');
+                // FIXED: Removed http://localhost:3000
+                const res = await fetch('/overdue-returns');
                 const overdues = await res.json();
                 if (overdues.length === 0) {
                      display.innerHTML = '<div style="text-align: center; color: green; margin-top: 30px;"><h3>✅ No Overdue Books!</h3><p>Everything is on time.</p></div>';
@@ -730,7 +740,8 @@
             const bookId = document.getElementById('checkBookId').value;
             if (!bookId) return alert("Please enter a Book ID");
             try {
-                const res = await fetch('http://localhost:3000/check-availability', {
+                // FIXED: Removed http://localhost:3000
+                const res = await fetch('/check-availability', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ bookId })
                 });
@@ -744,7 +755,9 @@
 
         async function postData(url, data, successMsg) {
             try {
-                const res = await fetch(`http://localhost:3000${url}`, {
+                // FIXED: Removed http://localhost:3000
+                // NOTE: url argument usually comes with a leading slash like '/add-book'
+                const res = await fetch(url, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
