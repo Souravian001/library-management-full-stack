@@ -58,7 +58,7 @@
         const errorMsg = document.getElementById('error-msg');
 
         loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevents page reload, allows "Enter" key functionality
+            e.preventDefault(); // Prevents page reload
             
             // UX: Disable button and show loading state
             btnLogin.disabled = true;
@@ -69,7 +69,8 @@
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('http://localhost:3000/login', {
+                // 🛑 FIXED: Removed 'http://localhost:3000' so it works on Cloud
+                const response = await fetch('/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
