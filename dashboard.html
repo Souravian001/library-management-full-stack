@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Dashboard</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2d3748;
+            --accent: #3182ce;
+            --accent-light: #63b3ed;
+            --success: #38a169;
+            --success-light: #68d391;
+            --warning: #d69e2e;
+            --warning-light: #f6e05e;
+            --danger: #e53e3e;
+            --danger-light: #fc8181;
+            --purple: #805ad5;
+            --purple-light: #9f7aea;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 0; margin: 0;
+            background: linear-gradient(135deg, var(--bg) 0%, #edf2f7 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500; font-size: 0.875rem;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Grid */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            display: flex; flex-direction: column;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .section:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .admin-section { border-top: 4px solid var(--danger); }
+        .report-section { border-top: 4px solid var(--accent); }
+        .trans-section { border-top: 4px solid var(--success); }
+
+        h3 {
+            margin-top: 0; margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 1.25rem; font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        h3::before {
+            content: ''; width: 4px; height: 20px;
+            background: currentColor; border-radius: 2px;
+        }
+
+        /* Inputs & Buttons */
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        input[readonly] {
+            background-color: #f7fafc;
+            color: var(--text-light);
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        button {
+            display: block; width: 100%;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border: none; border-radius: 0.5rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            transition: all 0.2s ease;
+            background: #e2e8f0;
+            color: var(--text);
+            font-size: 0.875rem;
+            position: relative; overflow: hidden;
+        }
+
+        button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+        button:active { transform: translateY(0); }
+
+        /* Button Colors */
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%); color: white; }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%); color: white; }
+        .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%); color: white; }
+        .btn-info { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; }
+        .btn-purple { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%); color: white; }
+
+        /* Panels & Display */
+        .form-panel {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1rem; margin-top: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .hidden { display: none !important; }
+
+        #display-area {
+            margin: 2rem; padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            min-height: 200px;
+            border: 1px solid var(--border);
+        }
+
+        /* --- STYLES FOR ENHANCED MENU --- */
+        .menu-btn {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; padding: 1rem;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left-width: 5px; /* Colored indicator */
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem; margin-top: 0;
+            font-weight: 600; color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn:hover {
+            background: #f8fafc;
+            transform: translateX(4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .menu-btn span:last-child { font-size: 0.8em; opacity: 0.6; }
+        
+        .input-group {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        }
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; gap: 0; } }
+        /* ------------------------------------- */
+
+        /* Tables */
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 1rem;
+            font-size: 0.875rem; border-radius: 0.5rem;
+            overflow: hidden; box-shadow: var(--shadow);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; padding: 1rem; text-align: left;
+            font-weight: 600; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text); }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        tr:hover { background-color: #edf2f7; transition: background-color 0.2s ease; }
+
+        label {
+            font-size: 0.75rem; font-weight: 600; color: var(--text-light);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 0.5rem; display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; padding: 1rem; }
+            .header { padding: 1rem; flex-direction: column; gap: 1rem; text-align: center; }
+            .section { padding: 1.5rem; }
+            #display-area { margin: 1rem; padding: 1.5rem; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .section { animation: fadeIn 0.5s ease-out; }
+    </style>
+</head>
+<body onload="initDashboard()">
+
+    <div class="header">
+        <h2 id="welcome-msg">Library Portal</h2>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        
+        <div id="fine-panel" class="section hidden" style="border-top: 4px solid #d35400; text-align: center; grid-column: span 3;">
+            <h2 style="color: #d35400; margin-bottom: 10px;">💰 Fine Payment Portal</h2>
+            <div style="font-size: 1.1rem; margin: 30px 0; background: #fff5f5; padding: 20px; border-radius: 10px;">
+                <p>Book ID: <strong id="fineBook"></strong></p>
+                <p>Days Overdue: <strong id="fineDays" style="color: red;"></strong></p>
+                <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+                <p>Total Fine Amount: <strong id="fineAmount" style="font-size: 1.8em; color: #d35400;"></strong></p>
+            </div>
+            <button onclick="processPayment()" style="background: #d35400; color: white; width: 250px; margin: 0 auto; padding: 15px;">Pay & Close</button>
+        </div>
+
+        <div id="maintenance-menu" class="section admin-section hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0; border: none; padding:0;">Maintenance</h3>
+                <span style="font-size: 0.75em; background: #ffebeb; color: var(--danger); padding: 4px 10px; border-radius: 20px; font-weight: 700; letter-spacing: 0.05em;">ADMIN MODE</span>
+            </div>
+
+            <button onclick="toggleForm('add-book-panel')" class="menu-btn" style="border-left-color: var(--danger);">
+                <span style="display: flex; align-items: center; gap: 10px;"> Add New Book</span>
+                <span>▼</span>
+            </button>
+            <div id="add-book-panel" class="form-panel hidden">
+                <input type="text" id="bookTitle" placeholder="Book Title">
+                <div class="input-group">
+                    <input type="text" id="bookAuthor" placeholder="Author Name">
+                    <input type="text" id="bookCategory" placeholder="Category">
+                </div>
+                <input type="number" id="bookStock" placeholder="Total Stock Quantity">
+                <button onclick="addBook()" class="btn-danger">Save Book</button>
+            </div>
+
+            <button onclick="toggleForm('update-book-panel')" class="menu-btn" style="border-left-color: var(--warning);">
+                <span style="display: flex; align-items: center; gap: 10px;"> Update / Edit Books</span>
+                <span>▼</span>
+            </button>
+            <div id="update-book-panel" class="form-panel hidden">
+                <label>Search Book by ID</label>
+                <div style="display: flex; gap: 0; margin-bottom: 15px;">
+                    <input type="number" id="updateBookId" placeholder="Enter ID" style="margin:0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;">
+                    <button onclick="fetchBookDetails()" class="btn-info" style="margin:0; width: auto; border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 0 1.5rem;">Load</button>
+                </div>
+                
+                <div id="edit-fields" class="hidden" style="border-top: 1px dashed var(--border); padding-top: 15px; margin-top: 15px;">
+                    <label>Edit Details</label>
+                    <input type="text" id="updateTitle" placeholder="Title">
+                    <div class="input-group">
+                        <input type="text" id="updateAuthor" placeholder="Author">
+                        <input type="text" id="updateCategory" placeholder="Category">
+                    </div>
+                    <input type="number" id="updateStock" placeholder="Stock">
+                    <button onclick="submitUpdate()" class="btn-warning">Update Book Now</button>
+                </div>
+            </div>
+
+            <button onclick="toggleForm('member-panel')" class="menu-btn" style="border-left-color: var(--purple);">
+                <span style="display: flex; align-items: center; gap: 10px;"> Add New Membership</span>
+                <span>▼</span>
+            </button>
+            <div id="member-panel" class="form-panel hidden">
+                <input type="text" id="memName" placeholder="Full Member Name">
+                <div class="input-group">
+                    <input type="email" id="memEmail" placeholder="Email Address">
+                    <input type="text" id="memPhone" placeholder="Phone Number">
+                </div>
+                <button onclick="addMember()" class="btn-purple">Create Member</button>
+            </div>
+            
+            <button onclick="toggleForm('user-panel')" class="menu-btn" style="border-left-color: var(--text-light);">
+    <span style="display: flex; align-items: center; gap: 10px;"> User Management</span>
+    <span>▼</span>
+</button>
+
+<div id="user-panel" class="form-panel hidden">
+    <h4 style="margin-top:0; color: #718096; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Create System Login</h4>
+    
+    <div class="input-group">
+        <input type="text" id="newUsername" placeholder="New Username">
+        <input type="text" id="newPassword" placeholder="New Password">
+    </div>
+    
+    <label>Select Role</label>
+    <select id="newRole" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 2px solid var(--border); border-radius: 0.5rem; background: white;">
+        <option value="user">User (Staff/Librarian)</option>
+        <option value="admin">Admin (Manager)</option>
+    </select>
+
+    <div style="display: flex; gap: 10px;">
+        <button onclick="addUser()" style="background: #2d3748; color: white;">Create Login</button>
+        <button onclick="getUsers()" style="background: white; border: 1px solid #cbd5e0; color: #2d3748;">View All Users</button>
+    </div>
+</div>
+        </div>
+
+        <div class="section report-section">
+            <h3>Reports & Data</h3>
+            <button onclick="getBooks()">View Master Book List</button>
+            <button onclick="getMembers()">View Membership List</button> 
+            <button onclick="getActiveIssues()">View Active Issues</button>
+            <button onclick="getOverdueReturns()">View Overdue Returns</button>
+        </div>
+
+        <div class="section trans-section">
+            <h3>Transactions</h3>
+            
+            <button onclick="toggleForm('issue-form')">Issue a Book</button>
+            <div id="issue-form" class="hidden form-panel">
+                <label>Book Details</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="issueBookId" placeholder="Book ID" oninput="autofillIssueDetails()" style="flex: 1;">
+                    <input type="text" id="issueAuthor" placeholder="Author" readonly style="flex: 2;">
+                </div>
+                
+                <label>Member & Dates</label>
+                <input type="text" id="issueMember" placeholder="Member Name">
+                
+                <div class="input-group">
+                    <div>
+                        <label style="font-size:0.7em;">Issue Date (Today)</label>
+                        <input type="text" id="issueDate" readonly style="background:#f0f0f0;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7em;">Return (Max 15 Days)</label>
+                        <input type="date" id="returnDate">
+                    </div>
+                </div>
+                <button onclick="issueBook()" class="btn-success">Confirm Issue</button>
+            </div>
+
+            <button onclick="toggleForm('return-form')">Return a Book</button>
+            <div id="return-form" class="hidden form-panel">
+                <div class="input-group">
+                    <input type="number" id="returnBookId" placeholder="Book ID">
+                    <input type="text" id="returnMember" placeholder="Member Name">
+                </div>
+                <button onclick="returnBook()" class="btn-warning" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">Confirm Return</button>
+            </div>
+
+            <button onclick="toggleForm('check-form')">Check Availability</button>
+            <div id="check-form" class="hidden form-panel">
+                <div style="display: flex; gap: 0;">
+                    <input type="number" id="checkBookId" placeholder="Enter Book ID to Check" style="margin:0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;">
+                    <button onclick="checkAvailability()" class="btn-info" style="margin:0; width: auto; border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 0 1.5rem;">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="display-area">
+        <div style="text-align: center; color: #aaa; margin-top: 30px;">
+            <p>Select an option from the menu to load data.</p>
+        </div>
+    </div>
+
+    <script>
+        let allBooks = [];
+
+        function initDashboard() {
+            const role = localStorage.getItem('userRole');
+            const user = localStorage.getItem('username');
+
+            if (!role) { 
+                window.location.href = 'index.html'; 
+                return; 
+            }
+
+            const greeting = ` Welcome ${user}`;
+
+            if (role === 'admin') {
+                document.getElementById('welcome-msg').innerText = ` Admin View | ${greeting}`;
+                document.getElementById('maintenance-menu').classList.remove('hidden');
+            } else {
+                document.getElementById('welcome-msg').innerText = ` User view | ${greeting}`;
+            }
+        }
+
+        function toggleForm(id) { document.getElementById(id).classList.toggle('hidden'); }
+        
+        function logout() {
+            localStorage.clear();
+            document.querySelector('.container').style.display = 'none';
+            document.querySelector('.header').style.display = 'none';
+            document.getElementById('display-area').style.display = 'none';
+            document.body.style.background = "#f0f0f0";
+
+            const msg = document.createElement('div');
+            msg.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 3rem; border-radius: 1rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                    <h2 style="color: #38a169;">Logged Out Successfully</h2>
+                    <p>Redirecting...</p>
+                </div>`;
+            document.body.appendChild(msg);
+            setTimeout(() => { window.location.href = 'index.html'; }, 1350);
+        }
+
+        // --- 15-DAY LOGIC & AUTOFILL ---
+        function autofillIssueDetails() {
+            // 1. Autofill Author
+            const id = document.getElementById('issueBookId').value;
+            const book = allBooks.find(b => b.id == id);
+            document.getElementById('issueAuthor').value = book ? (book.author || "Unknown") : "";
+
+            // 2. Autofill Dates (Compliance: 15 days max)
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            document.getElementById('issueDate').value = dateStr; // Set today
+
+            // Calculate +15 days
+            const targetDate = new Date();
+            targetDate.setDate(today.getDate() + 15);
+            const maxDateStr = targetDate.toISOString().split('T')[0];
+
+            const returnInput = document.getElementById('returnDate');
+            returnInput.value = maxDateStr; // Default to 15 days
+            returnInput.max = maxDateStr;   // Cannot go beyond 15 days
+            returnInput.min = dateStr;      // Cannot go to past
+        }
+
+        async function issueBook() {
+            const bookId = document.getElementById('issueBookId').value;
+            const memberName = document.getElementById('issueMember').value;
+            // Use returnDate as the due date now
+            const dueDate = document.getElementById('returnDate').value;
+            
+            if(!bookId || !memberName || !dueDate) return alert("Missing fields");
+            
+            await postData('/issue-book', {bookId, memberName, dueDate}, "Book Issued!");
+            toggleForm('issue-form');
+        }
+
+        // --- RETURN BOOK (REDIRECT TO FINE PAGE) ---
+        async function returnBook() {
+            const bookId = document.getElementById('returnBookId').value;
+            const memberName = document.getElementById('returnMember').value;
+            
+            const res = await fetch('http://localhost:3000/return-book', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({bookId, memberName})
+            });
+            const data = await res.json();
+            
+            if(data.success) {
+                // HIDE DASHBOARD
+                document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+                document.getElementById('display-area').classList.add('hidden');
+                
+                // SHOW FINE PANEL
+                const finePanel = document.getElementById('fine-panel');
+                finePanel.classList.remove('hidden');
+                
+                // POPULATE DATA
+                document.getElementById('fineBook').innerText = bookId;
+                document.getElementById('fineDays').innerText = data.fineAmount > 0 ? (data.fineAmount/5) : "0";
+                document.getElementById('fineAmount').innerText = "₹" + data.fineAmount;
+            } else { alert(data.message); }
+        }
+
+        function processPayment() {
+            alert("Payment Recorded & Book Returned.");
+            location.reload(); // Reload dashboard
+        }
+                    // --- USER MANAGEMENT FUNCTIONS ---
+
+            // 1. Add User
+            async function addUser() {
+                const username = document.getElementById('newUsername').value;
+                const password = document.getElementById('newPassword').value;
+                const role = document.getElementById('newRole').value;
+
+                if (!username || !password) return alert("Please enter Username and Password");
+
+                await postData('/add-user', { username, password, role }, "User Created Successfully!");
+                
+                // Reset fields
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                getUsers(); // Refresh the list
+            }
+
+            // 2. Get Users List
+            async function getUsers() {
+                const display = document.getElementById('display-area');
+
+                // Toggle: Close if already open
+                if (display.innerHTML.includes('System Users')) {
+                    display.innerHTML = '<div style="text-align: center; color: #aaa; margin-top: 30px;"><p>Select an option from the menu to load data.</p></div>';
+                    return; 
+                }
+
+                try {
+                    const res = await fetch('http://localhost:3000/users');
+                    const users = await res.json();
+                    
+                    let html = `<h3 style="margin-bottom:15px; color:#1a365d;">System Users</h3><table><thead><tr>
+                        <th>ID</th><th>Username</th><th>Role</th><th>Action</th>
+                    </tr></thead><tbody>`;
+
+                    users.forEach(u => {
+                        // Logic to style badges differently for Admin vs User
+                        const badgeColor = u.role === 'admin' ? 'background:#fee2e2; color:#9b2c2c;' : 'background:#e6fffa; color:#2c7a7b;';
+                        
+                        // Logic to prevent deleting the 'admin' user
+                        const deleteBtn = u.username !== 'admin' 
+                            ? `<button onclick="deleteUser(${u.id})" style="background:#e53e3e; color:white; width:auto; padding:5px 10px; font-size:0.75rem; margin:0;">Delete</button>` 
+                            : `<span style="color:#cbd5e0;">-</span>`;
+
+                        html += `<tr>
+                            <td>${u.id}</td>
+                            <td><strong>${u.username}</strong></td>
+                            <td><span style="${badgeColor} padding:2px 8px; border-radius:12px; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">${u.role}</span></td>
+                            <td>${deleteBtn}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    display.innerHTML = html;
+
+                } catch (e) { alert("Error fetching users"); }
+            }
+
+            // 3. Delete User
+            async function deleteUser(id) {
+                if(!confirm("Are you sure you want to delete this user? They will lose access immediately.")) return;
+
+                try {
+                    const res = await fetch('http://localhost:3000/delete-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id })
+                    });
+                    const data = await res.json();
+                    if(data.success) {
+                        getUsers(); // Refresh table
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                } catch(e) { console.error(e); }
+            }
+
+        // --- OTHER FUNCTIONS ---
+        async function getBooks() {
+            const display = document.getElementById('display-area');
+            if (display.innerHTML.includes('Book Catalog')) {
+                display.innerHTML = '<div style="text-align: center; color: #aaa; margin-top: 30px;"><p>Select an option from the menu to load data.</p></div>';
+                return; 
+            }
+            try {
+                const res = await fetch('http://localhost:3000/books');
+                allBooks = await res.json();
+                renderTable('Book Catalog', ['ID', 'Title', 'Author', 'Category', 'Stock'], allBooks.map(b => [
+                    `<strong>${b.id}</strong>`, b.title, b.author || '-', b.category, 
+                    b.available_stock > 0 ? `<span style="color:#38a169; font-weight:bold">${b.available_stock}</span>` : `<span style="color:#e53e3e; font-weight:bold">Out</span>`
+                ]));
+            } catch (e) { alert("Error fetching books"); }
+        }
+
+        async function addBook() {
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const category = document.getElementById('bookCategory').value;
+            const stock = document.getElementById('bookStock').value;
+            if(!title || !stock) return alert("Missing fields");
+
+            await postData('/add-book', { title, author, category, stock }, "Book Added!");
+            document.getElementById('bookTitle').value = '';
+            getBooks();
+        }
+
+        async function fetchBookDetails() {
+            const id = document.getElementById('updateBookId').value;
+            let book = allBooks.find(b => b.id == id);
+            if (!book) {
+                try {
+                    const res = await fetch('http://localhost:3000/books');
+                    const data = await res.json();
+                    book = data.find(b => b.id == id);
+                } catch(e) {}
+            }
+            if(book) {
+                document.getElementById('updateTitle').value = book.title;
+                document.getElementById('updateAuthor').value = book.author;
+                document.getElementById('updateCategory').value = book.category;
+                document.getElementById('updateStock').value = book.available_stock;
+                document.getElementById('edit-fields').classList.remove('hidden');
+            } else { alert("Book not found"); }
+        }
+
+        async function submitUpdate() {
+            const id = document.getElementById('updateBookId').value;
+            const title = document.getElementById('updateTitle').value;
+            const author = document.getElementById('updateAuthor').value;
+            const category = document.getElementById('updateCategory').value;
+            const stock = document.getElementById('updateStock').value;
+            
+            await fetch('http://localhost:3000/update-book', {
+                method: 'PUT', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id, title, author, category, stock})
+            }).then(r => r.json()).then(d => {
+                if(d.success) { alert("Updated!"); getBooks(); document.getElementById('edit-fields').classList.add('hidden'); }
+                else alert(d.message);
+            });
+        }
+
+        async function addMember() {
+            const name = document.getElementById('memName').value;
+            const email = document.getElementById('memEmail').value;
+            const phone = document.getElementById('memPhone').value;
+            if(!name || !email) return alert("Name and Email are required");
+
+            await postData('/add-member', { name, email, phone }, "Member Added Successfully!");
+            document.getElementById('memName').value = '';
+            document.getElementById('memEmail').value = '';
+            document.getElementById('memPhone').value = '';
+            toggleForm('member-panel'); 
+            getMembers(); 
+        }
+
+        async function getMembers() {
+            const display = document.getElementById('display-area');
+            if (display.innerHTML.includes('Membership List')) {
+                display.innerHTML = '<div style="text-align: center; color: #aaa; margin-top: 30px;"><p>Select an option from the menu to load data.</p></div>';
+                return; 
+            }
+            try {
+                const res = await fetch('http://localhost:3000/members');
+                const members = await res.json();
+                renderTable('Membership List', ['ID', 'Name', 'Email', 'Phone', 'Join Date'], members.map(m => [
+                    m.id, `<strong>${m.name}</strong>`, m.email, m.phone || '-', new Date(m.join_date).toLocaleDateString()
+                ]));
+            } catch (e) { alert("Error fetching members"); }
+        }
+
+        async function getActiveIssues() {
+            const display = document.getElementById('display-area');
+            if (display.innerHTML.includes('Active Issues List')) {
+                display.innerHTML = '<div style="text-align: center; color: #aaa; margin-top: 30px;"><p>Select an option from the menu to load data.</p></div>';
+                return; 
+            }
+            try {
+                const res = await fetch('http://localhost:3000/active-issues');
+                const issues = await res.json();
+                renderTable('Active Issues List', ['Tx ID', 'User Name', 'Book ID','Book Title', 'Due Date'], issues.map(item => [
+                    `#${item.id}`, `<strong>${item.user_name}</strong>`, item.book_id, item.title, new Date(item.due_date).toLocaleDateString()
+                ]));
+            } catch (e) { console.error(e); alert("Error fetching active issues"); }
+        }
+
+        async function getOverdueReturns() {
+            const display = document.getElementById('display-area');
+            if (display.innerHTML.includes('Overdue List')) {
+                display.innerHTML = '<div style="text-align: center; color: #aaa; margin-top: 30px;"><p>Select an option from the menu to load data.</p></div>';
+                return; 
+            }
+            try {
+                const res = await fetch('http://localhost:3000/overdue-returns');
+                const overdues = await res.json();
+                if (overdues.length === 0) {
+                     display.innerHTML = '<div style="text-align: center; color: green; margin-top: 30px;"><h3>✅ No Overdue Books!</h3><p>Everything is on time.</p></div>';
+                     return;
+                }
+                renderTable(' Overdue List (Late Returns)', ['User Name', 'Book Title', 'Due Date', 'Days Late', 'Est. Fine'], overdues.map(item => {
+                    const due = new Date(item.due_date);
+                    const today = new Date();
+                    const diffTime = Math.abs(today - due);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    const fine = diffDays * 5; 
+                    return [
+                        `<strong>${item.user_name}</strong>`, item.title, due.toLocaleDateString(),
+                        `<span style="color:red; font-weight:bold">${diffDays} Days</span>`, `$${fine}`
+                    ];
+                }));
+            } catch (e) { console.error(e); alert("Error fetching overdue data"); }
+        }
+
+        async function checkAvailability() {
+            const bookId = document.getElementById('checkBookId').value;
+            if (!bookId) return alert("Please enter a Book ID");
+            try {
+                const res = await fetch('http://localhost:3000/check-availability', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bookId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const b = data.book;
+                    alert(` Title: ${b.title}\n Available: ${b.available_stock} / ${b.total_stock}`);
+                } else { alert("Wrong " + data.message); }
+            } catch (e) { console.error(e); alert("Server Error"); }
+        }
+
+        async function postData(url, data, successMsg) {
+            try {
+                const res = await fetch(`http://localhost:3000${url}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const d = await res.json();
+                if(d.success) alert(successMsg);
+                else alert("Error: " + d.message);
+            } catch(e) { console.error(e); alert("Server Error"); }
+        }
+
+        function renderTable(title, headers, rows) {
+            let html = `<h3 style="margin-bottom:15px; color:#1a365d;">${title}</h3><table><thead><tr>`;
+            headers.forEach(h => html += `<th>${h}</th>`);
+            html += '</tr></thead><tbody>';
+            rows.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => html += `<td>${cell}</td>`);
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            document.getElementById('display-area').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

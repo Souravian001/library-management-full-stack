@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS | Secure Login</title>
+    <style>
+        :root { --primary: #4F46E5; --primary-hover: #4338ca; --bg-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-grad); height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95); padding: 2.5rem; border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 380px; text-align: center;
+        }
+        h2 { color: #333; margin-bottom: 0.5rem; font-weight: 700; }
+        p.sub-text { color: #666; margin-top: 0; font-size: 0.9rem; margin-bottom: 2rem; }
+        .input-group { margin-bottom: 1.25rem; text-align: left; }
+        label { display: block; margin-bottom: 0.5rem; color: #444; font-size: 0.85rem; font-weight: 600; }
+        input {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+            font-size: 1rem; transition: border-color 0.3s, box-shadow 0.3s; outline: none;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        button {
+            width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none;
+            border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.3s;
+        }
+        button:hover { background-color: var(--primary-hover); }
+        button:disabled { background-color: #a5a5a5; cursor: not-allowed; }
+        .error { color: #dc2626; background: #fee2e2; padding: 10px; border-radius: 6px; font-size: 0.9rem; margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1>Welcome Back</h1>
+        <p class="sub-text"><h4>Enter your credentials to access the library.</h4></p>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="e.g. admin / user" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" id="btn-login">Log In</button>
+        </form>
+        <div id="error-msg" class="error">Invalid Username or Password</div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const btnLogin = document.getElementById('btn-login');
+        const errorMsg = document.getElementById('error-msg');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevents page reload, allows "Enter" key functionality
+            
+            // UX: Disable button and show loading state
+            btnLogin.disabled = true;
+            btnLogin.innerText = "Verifying...";
+            errorMsg.style.display = 'none';
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('userRole', data.role);
+                    localStorage.setItem('username', username);
+                    btnLogin.innerText = "Success! Redirecting...";
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                } else {
+                    throw new Error(data.message || 'Invalid credentials');
+                }
+            } catch (error) {
+                console.error('Login Error:', error);
+                errorMsg.textContent = "⚠ " + (error.message === 'Failed to fetch' ? "Server unavailable" : "Invalid Credentials");
+                errorMsg.style.display = 'block';
+                
+                // UX: Reset button
+                btnLogin.disabled = false;
+                btnLogin.innerText = "Sign In";
+            }
+        });
+    </script>
+</body>
+</html>
