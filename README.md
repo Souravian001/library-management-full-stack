@@ -6,9 +6,10 @@ A complete Library Management System built with **Node.js**, **Express**, and **
 *https://library-management-full-stack-9s36.onrender.com*
 
 
-(use user id : admin & password : admin123 to log in this system)
+(use user id : admin , password : admin123 to log in this system for admin view & userid: staff, password:staff123 for user view )
 
 ---
+
 
 ##  Tech Stack
 * **Frontend:** HTML5, CSS3, Vanilla JavaScript
